@@ -10,4 +10,9 @@ const userValidation = Joi.object({
   id_spp: Joi.number().required(),
 });
 
-module.exports = { userValidation };
+const loginValidation = Joi.object({
+  nisn: Joi.number().required(),
+  nama: Joi.string().max(100).required(),
+});
+
+module.exports = { userValidation, loginValidation };

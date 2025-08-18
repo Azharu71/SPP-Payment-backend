@@ -2,8 +2,8 @@ const { ResponseError } = require("../handler/error-handler");
 
 const errorMidleware = async (err, req, res, next) => {
   if (!err) {
-    return;
     next();
+    return;
   }
   if (err instanceof ResponseError) {
     res.status(err.status).json({
@@ -11,7 +11,7 @@ const errorMidleware = async (err, req, res, next) => {
     });
   } else {
     res
-      .status(err.status)
+      .status(500)
       .json({
         message: err.message,
       })
