@@ -34,4 +34,16 @@ const getUser = async (req, res, next) => {
     next(e);
   }
 };
-module.exports = { register, login, getUser };
+
+const logout = async (req, res, next) => {
+  try {
+    const result = await userService.userLogout(req.user.nisn);
+    res.status(200).json({
+      message: "Logout success",
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+module.exports = { register, login, getUser, logout };

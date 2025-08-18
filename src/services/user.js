@@ -64,7 +64,7 @@ const userLogin = async (req) => {
     throw new ResponseError(400, "Name or Nisn Wrong");
   }
 
-  //kirim token jika berhasil login
+  //kirim token yang berlaku 1 jam jika berhasil login
   const userPayload = nisnRows[0];
   const payload = {
     nisn: userPayload.nisn,
@@ -82,7 +82,8 @@ const userLogin = async (req) => {
 const userGet = async (nisn) => {
   //joi validation
 
-  const selectuser = "SELECT * FROM siswa WHERE nisn = ? ";
+  const selectuser =
+    "SELECT siswa.nisn, siswa.nis, siswa.nama, siswa.id_kelas, siswa.alamat, siswa.no_telp, siswa.id_spp, kelas.nama_kelas, kelas.kompetensi_keahlian FROM siswa INNER JOIN kelas ON kelas.id_kelas = siswa.id_kelas WHERE siswa.nisn = ? ";
   const [userRows] = await db.query(selectuser, [nisn]);
 
   // Hentikan eksekusi jika nisn atau nis salah
@@ -90,7 +91,20 @@ const userGet = async (nisn) => {
     throw new ResponseError(404, "User is not found");
   }
 
+  // console.log("Hasil Mentah dari Database:", userRows);
   //kirim data user jika berhasil login
   return userRows;
 };
-module.exports = { userRegister, userLogin, userGet };
+
+const userLogout = async (nisn) => {
+  const selectuser = "SELECT * FROM siswa WHERE nisn = ? ";
+  const [userRows] = await db.query(selectuser, [nisn]);
+  if (userRows.length == 0) {
+    throw new ResponseError(404, "User is not found");
+  }
+
+  return {
+    message: "uhh oke",
+  };
+};
+module.exports = { userRegister, userLogin, userGet, userLogout };

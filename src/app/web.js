@@ -8,10 +8,10 @@ web.use(express.json());
 
 web.use(publicRoute);
 web.use(apiRoute);
-web.use(errorMidleware);
 
 //default route jika tidak ada
 web.use("", (req, res) => {
   res.status(404).send("Nothing here");
 });
+web.use(errorMidleware);
 module.exports = { web };

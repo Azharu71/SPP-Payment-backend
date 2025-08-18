@@ -1,3 +1,5 @@
+//file dasar/ root program ini
+
 const log = require("./app/logger");
 const db = require("./app/db");
 const { web } = require("./app/web");

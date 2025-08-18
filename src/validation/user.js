@@ -1,5 +1,6 @@
 const Joi = require("joi");
 
+//validasi input data dengan joi
 const userValidation = Joi.object({
   nisn: Joi.number().required(),
   nis: Joi.number().required(),

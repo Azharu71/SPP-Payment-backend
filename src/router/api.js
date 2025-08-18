@@ -9,5 +9,9 @@ route.use(authMiddleware);
 
 //route siswa
 route.get("/api/users/current", user.getUser);
+route.delete("/api/users/logout", user.logout);
 
+//route petugas
+
+//route admin
 module.exports = { route };

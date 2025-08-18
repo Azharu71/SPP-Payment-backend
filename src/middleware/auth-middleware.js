@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
+  //not bearer token
   const token = req.headers["authorization"];
 
   if (!token) {
@@ -10,6 +11,10 @@ const authMiddleware = async (req, res, next) => {
         message: "Token not set: Unauthorized",
       })
       .end();
+  }
+  if (token.startsWith("Bearer ")) {
+    //bearer token
+    token = token.substring(7, token.length);
   }
   try {
     const user = jwt.verify(token, process.env.SECRET);
