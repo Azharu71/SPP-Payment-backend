@@ -7,5 +7,8 @@ const route = express.Router();
 route.post("/api/users/login", user.login);
 route.post("/api/users", user.register);
 route.get("/ping", Ping.ping);
+route.get("", (req, res, next) => {
+  res.send("Nothing Here");
+});
 
 module.exports = { route };

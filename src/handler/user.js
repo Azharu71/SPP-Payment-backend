@@ -35,6 +35,18 @@ const getUser = async (req, res, next) => {
   }
 };
 
+const getPembayaran = async (req, res, next) => {
+  try {
+    const result = await userService.userPembayaran(req.user.nisn);
+    res.status(200).json({
+      message: "User data retrieved",
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const logout = async (req, res, next) => {
   try {
     const result = await userService.userLogout(req.user.nisn);
@@ -46,4 +58,4 @@ const logout = async (req, res, next) => {
     next(e);
   }
 };
-module.exports = { register, login, getUser, logout };
+module.exports = { register, login, getUser, logout, getPembayaran };

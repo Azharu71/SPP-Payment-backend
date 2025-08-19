@@ -9,6 +9,7 @@ route.use(authMiddleware);
 
 //route siswa
 route.get("/api/users/current", user.getUser);
+route.get("/api/users/current/pembayaran", user.getPembayaran);
 route.delete("/api/users/logout", user.logout);
 
 //route petugas

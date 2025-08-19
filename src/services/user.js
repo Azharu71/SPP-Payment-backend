@@ -1,4 +1,5 @@
 // const bcrypt = require("bcryptjs");
+const { object } = require("joi");
 const db = require("../app/db");
 const { ResponseError } = require("../handler/error-handler");
 const { userValidation, loginValidation } = require("../validation/user");
@@ -93,7 +94,69 @@ const userGet = async (nisn) => {
 
   // console.log("Hasil Mentah dari Database:", userRows);
   //kirim data user jika berhasil login
-  return userRows;
+  return userRows[0];
+};
+
+const userPembayaran = async (nisn) => {
+  //joi validation
+
+  //query sql
+  const selectUser = `SELECT s.nisn, s.nama, s.no_telp, p.tgl_bayar, p.jumlah_bayar, spp.nominal, spp.tahun FROM pembayaran p INNER JOIN siswa s ON s.nisn = p.nisn INNER JOIN spp ON p.id_spp = spp.id_spp WHERE s.nisn = ? ORDER BY p.tgl_bayar ASC `;
+
+  const [userRows] = await db.query(selectUser, [nisn]);
+  // console.log(userRows);
+
+  // Hentikan eksekusi jika nisn atau nis salah
+  if (userRows.length == 0) {
+    throw new ResponseError(404, "User Payment not found");
+  }
+  // // s.nisn, s.nama, s.no_telp, p.tgl_bayar, p.jumlah_bayar, spp.nominal, spp.tahun
+
+  let semuaHistori = {};
+  userRows.forEach((data) => {
+    const tahun = data.tahun;
+    if (!semuaHistori[tahun]) {
+      semuaHistori[tahun] = {
+        tahun_spp: tahun,
+        nominal_spp: data.nominal,
+        total: 0,
+        pembayaran: [],
+      };
+    }
+    semuaHistori[tahun].pembayaran.push({
+      tanggal_bayar: data.tgl_bayar,
+      jumlah_bayar: data.jumlah_bayar,
+    });
+
+    //Perhitungan status bayar
+    semuaHistori[tahun].total += data.jumlah_bayar;
+  });
+
+  const historiBayar = Object.values(semuaHistori).map((sppTahun) => {
+    const kurang = sppTahun.nominal_spp - sppTahun.total;
+    // console.log(kurang);
+
+    return {
+      status_bayar: kurang <= 0 ? "Lunas" : "Belum Lunas",
+      kurang: kurang <= 0 ? 0 : kurang,
+      tahun_spp: sppTahun.tahun_spp,
+      nominal_spp: sppTahun.nominal_spp,
+      pembayaran: sppTahun.pembayaran,
+    };
+  });
+
+  // //cleanup data
+
+  const dataPembayaran = {
+    nisn: userRows[0].nisn,
+    nama: userRows[0].nama,
+    telepon: userRows[0].no_telp,
+    histori_bayar: historiBayar,
+  };
+  // console.log(dataPembayaran);
+
+  // //kirim data user jika berhasil login
+  return dataPembayaran;
 };
 
 const userLogout = async (nisn) => {
@@ -107,4 +170,10 @@ const userLogout = async (nisn) => {
     message: "uhh oke",
   };
 };
-module.exports = { userRegister, userLogin, userGet, userLogout };
+module.exports = {
+  userRegister,
+  userLogin,
+  userGet,
+  userLogout,
+  userPembayaran,
+};

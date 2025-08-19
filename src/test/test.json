@@ -1,0 +1,42 @@
+{
+  "message": "User data retrieved",
+  "data": {
+    "nisn": "1234",
+    "nama": "Test",
+    "telepon": "812345678",
+    "historiBayar": [
+      {
+        "status_bayar": "Lunas",
+        "kurang": 0,
+        "tahun_spp": 2025,
+        "nominal_spp": 500000,
+        "pembayaran": [
+          {
+            "tanggal_bayar": "2025-08-17T17:00:00.000Z",
+            "jumlah_bayar": 200000
+          },
+          {
+            "tanggal_bayar": "2025-08-17T17:00:00.000Z",
+            "jumlah_bayar": 300000
+          }
+        ]
+      },
+      {
+        "status_bayar": "Belum Lunas",
+        "kurang": 150000,
+        "tahun_spp": 2026,
+        "nominal_spp": 500000,
+        "pembayaran": [
+          {
+            "tanggal_bayar": "2026-04-17T17:00:00.000Z",
+            "jumlah_bayar": 100000
+          },
+          {
+            "tanggal_bayar": "2026-08-17T17:00:00.000Z",
+            "jumlah_bayar": 250000
+          }
+        ]
+      }
+    ]
+  }
+}
