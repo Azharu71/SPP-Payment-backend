@@ -1,0 +1,8 @@
+siswa:
+register, histori pembayaran, *bisa ditambahkan fitur agar siswa dapat membayar sendiri
+
+petugas:
+update siswa, update kelas, update pembayaran 
+
+admin:
+update siswa, update kelas, update pembayaran, update petugas

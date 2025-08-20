@@ -9,7 +9,7 @@ const payload = {
 
 const token = jwt.sign(payload, "rahasianyadirahasiakan", { expiresIn: "1h" });
 
-bcrypt.hash("admin", 10, (err, hash) => {
+bcrypt.hash("123", 10, (err, hash) => {
   console.log(hash);
 });
 
