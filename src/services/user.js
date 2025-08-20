@@ -1,5 +1,3 @@
-// const bcrypt = require("bcryptjs");
-const { object } = require("joi");
 const db = require("../app/db");
 const { ResponseError } = require("../handler/error-handler");
 const { userValidation, loginValidation } = require("../validation/user");
@@ -101,7 +99,7 @@ const userPembayaran = async (nisn) => {
   //joi validation
 
   //query sql
-  const selectUser = `SELECT s.nisn, s.nama, s.no_telp, p.tgl_bayar, p.jumlah_bayar, spp.nominal, spp.tahun FROM pembayaran p INNER JOIN siswa s ON s.nisn = p.nisn INNER JOIN spp ON p.id_spp = spp.id_spp WHERE s.nisn = ? ORDER BY p.tgl_bayar ASC `;
+  const selectUser = `SELECT s.nisn, s.nama, s.no_telp, p.tgl_bayar, p.jumlah_bayar, spp.nominal, spp.tahun, pt.nama_petugas FROM pembayaran p INNER JOIN siswa s ON p.nisn = s.nisn INNER JOIN spp ON p.id_spp = spp.id_spp INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas WHERE s.nisn = ? ORDER BY p.tgl_bayar ASC `;
 
   const [userRows] = await db.query(selectUser, [nisn]);
   // console.log(userRows);
@@ -119,6 +117,7 @@ const userPembayaran = async (nisn) => {
       semuaHistori[tahun] = {
         tahun_spp: tahun,
         nominal_spp: data.nominal,
+
         total: 0,
         pembayaran: [],
       };
@@ -126,11 +125,13 @@ const userPembayaran = async (nisn) => {
     semuaHistori[tahun].pembayaran.push({
       tanggal_bayar: data.tgl_bayar,
       jumlah_bayar: data.jumlah_bayar,
+      petugas: data.nama_petugas,
     });
 
     //Perhitungan status bayar
     semuaHistori[tahun].total += data.jumlah_bayar;
   });
+  // console.log(semuaHistori);
 
   const historiBayar = Object.values(semuaHistori).map((sppTahun) => {
     const kurang = sppTahun.nominal_spp - sppTahun.total;
@@ -140,6 +141,7 @@ const userPembayaran = async (nisn) => {
       status_bayar: kurang <= 0 ? "Lunas" : "Belum Lunas",
       kurang: kurang <= 0 ? 0 : kurang,
       tahun_spp: sppTahun.tahun_spp,
+      petugas: sppTahun.petugas,
       nominal_spp: sppTahun.nominal_spp,
       pembayaran: sppTahun.pembayaran,
     };
