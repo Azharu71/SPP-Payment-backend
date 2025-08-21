@@ -43,7 +43,7 @@ const update = async (req, res, next) => {
   try {
     const result = await petugasService.updatePetugas(req.body);
     res.status(200).json({
-      data: result
+      data: result,
     });
   } catch (e) {
     next(e);
@@ -52,9 +52,9 @@ const update = async (req, res, next) => {
 
 const get = async (req, res, next) => {
   try {
-    const result = await petugasService.getPetugas();
+    const result = await petugasService.getPetugas(req.user);
     res.status(200).json({
-      data: result
+      data: result,
     });
   } catch (e) {
     next(e);
@@ -63,13 +63,56 @@ const get = async (req, res, next) => {
 
 const deletePetugas = async (req, res, next) => {
   try {
-    const result = await petugasService.deletePetugas(req.body);
+    const result = await petugasService.deletePetugas(req.body, req.user);
     res.status(200).json({
-      data: result
+      data: result,
     });
   } catch (e) {
     next(e);
   }
 };
 
-module.exports = { login, register, update, get, deletePetugas };
+const logout = async (req, res, next) => {
+  try {
+    const result = await petugasService.petugasLogout(req.user);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+//modifikasi siswa
+const updateSiswa = async (req, res, next) => {
+  try {
+    const result = await petugasService.updateSiswa(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deleteSiswa = async (req, res, next) => {
+  try {
+    const result = await petugasService.deleteSiswa(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = {
+  login,
+  register,
+  update,
+  get,
+  deletePetugas,
+  logout,
+  updateSiswa,
+  deleteSiswa,
+};

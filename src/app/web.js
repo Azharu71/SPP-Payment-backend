@@ -5,8 +5,8 @@ const { route: apiRoute } = require("../router/api");
 const { errorMidleware } = require("../middleware/error");
 const logger = require("./logger");
 
-web.use(express.json());
 web.use(logger);
+web.use(express.json());
 web.use(publicRoute);
 web.use(apiRoute);
 

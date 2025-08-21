@@ -1,0 +1,803 @@
+openapi: 3.0.0
+info:
+  title: API Pembayaran Sekolah
+  description: Dokumentasi API untuk sistem pembayaran sekolah yang mencakup manajemen siswa dan petugas.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Server Lokal
+security:
+  - bearerAuth: []
+tags:
+  - name: Public
+    description: Endpoint yang dapat diakses tanpa otentikasi.
+  - name: Siswa
+    description: Endpoint untuk manajemen data siswa dan pembayaran.
+  - name: Petugas
+    description: Endpoint untuk manajemen data petugas dan siswa oleh petugas.
+  - name: Admin
+    description: Endpoint khusus untuk manajemen data petugas oleh admin.
+paths:
+  /api/login:
+    post:
+      summary: Login pengguna atau petugas
+      description: Otentikasi pengguna berdasarkan nisn/nama atau username/password.
+      tags:
+        - Public
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/LoginSiswa'
+                - $ref: '#/components/schemas/LoginPetugas'
+            examples:
+              loginSiswa:
+                summary: Contoh Login Siswa
+                value:
+                  nisn: 1234
+                  nama: John Doe
+              loginPetugas:
+                summary: Contoh Login Petugas
+                value:
+                  username: admin
+                  password: password123
+      responses:
+        '200':
+          description: Login berhasil, mengembalikan token JWT.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login Success"
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      message:
+                        type: string
+                        example: "Halo John Doe"
+        '400':
+          description: Permintaan tidak valid atau kredensial salah.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/register:
+    post:
+      summary: Pendaftaran siswa baru
+      description: Mendaftarkan siswa baru ke dalam sistem.
+      tags:
+        - Public
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterSiswa'
+      responses:
+        '200':
+          description: Pendaftaran berhasil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User Created successfully"
+                  data:
+                    type: object
+                    properties:
+                      nama:
+                        type: string
+                        example: "John Doe"
+                      nisn:
+                        type: number
+                        example: 1234
+        '400':
+          description: NISN sudah ada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  
+  /ping:
+    get:
+      summary: Endpoint uji coba
+      description: Menguji apakah server berjalan.
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Server berjalan.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "PONG"
+--------------------------------------------------------------------------------
+  /api/users/current:
+    get:
+      summary: Mengambil data siswa yang sedang login
+      description: Mengambil detail profil siswa yang sedang login menggunakan token JWT.
+      tags:
+        - Siswa
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Data pengguna berhasil diambil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User data retrieved"
+                  data:
+                    $ref: '#/components/schemas/SiswaDetail'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Pengguna tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/users/current/pembayaran:
+    get:
+      summary: Mengambil riwayat pembayaran siswa
+      description: Mengambil riwayat pembayaran lengkap dari siswa yang sedang login, diatur per tahun SPP.
+      tags:
+        - Siswa
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Riwayat pembayaran berhasil diambil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User data retrieved"
+                  data:
+                    $ref: '#/components/schemas/PembayaranHistory'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Riwayat pembayaran tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/users/logout:
+    delete:
+      summary: Logout siswa
+      description: Mengakhiri sesi siswa.
+      tags:
+        - Siswa
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout berhasil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logout success"
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "uhh oke"
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Pengguna tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+--------------------------------------------------------------------------------
+  /api/petugas/logout:
+    delete:
+      summary: Logout petugas/admin
+      description: Mengakhiri sesi petugas atau admin.
+      tags:
+        - Petugas
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout berhasil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "uhh oke"
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Pengguna tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/petugas/siswa/update:
+    patch:
+      summary: Memperbarui data siswa
+      description: Memperbarui data siswa oleh petugas atau admin.
+      tags:
+        - Petugas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSiswa'
+      responses:
+        '200':
+          description: Data siswa berhasil diperbarui.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Updated successfully"
+                      updated:
+                        type: array
+                        items:
+                          type: string
+                        example: ["nama"]
+        '400':
+          description: Permintaan tidak valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '403':
+          description: Akses ditolak.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Data yang akan diperbarui tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/petugas/siswa/delete:
+    delete:
+      summary: Menghapus data siswa
+      description: Menghapus data siswa dari sistem oleh petugas atau admin.
+      tags:
+        - Petugas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteSiswa'
+      responses:
+        '200':
+          description: Data siswa berhasil dihapus.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Siswa Deleted"
+        '400':
+          description: Permintaan tidak valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '403':
+          description: Akses ditolak.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Siswa tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+--------------------------------------------------------------------------------
+  /api/admin/register:
+    post:
+      summary: Pendaftaran petugas baru
+      description: Mendaftarkan petugas baru ke dalam sistem. Hanya dapat diakses oleh admin.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterPetugas'
+      responses:
+        '200':
+          description: Pendaftaran berhasil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Petugas Created successfully"
+                  data:
+                    $ref: '#/components/schemas/Petugas'
+        '400':
+          description: Username sudah ada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '403':
+          description: Akses ditolak (bukan admin).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/admin/petugas:
+    get:
+      summary: Mengambil daftar semua petugas
+      description: Mengambil daftar semua petugas yang terdaftar dalam sistem. Hanya dapat diakses oleh admin.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Daftar petugas berhasil diambil.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "You're login AS: admin"
+                      daftar_petugas:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Petugas'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '403':
+          description: Akses ditolak (bukan admin).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Petugas tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+  
+  /api/admin/update:
+    patch:
+      summary: Memperbarui data petugas
+      description: Memperbarui data petugas oleh admin.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePetugas'
+      responses:
+        '200':
+          description: Data petugas berhasil diperbarui.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Updated successfully"
+                      updated:
+                        type: array
+                        items:
+                          type: string
+                        example: ["nama_petugas", "level"]
+        '400':
+          description: Permintaan tidak valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '403':
+          description: Akses ditolak.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+  /api/admin/petugas/delete:
+    delete:
+      summary: Menghapus petugas
+      description: Menghapus data petugas dari sistem. Hanya dapat diakses oleh admin.
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePetugas'
+      responses:
+        '200':
+          description: Petugas berhasil dihapus.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Petugas Deleted"
+        '400':
+          description: Permintaan tidak valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '401':
+          description: Token tidak valid atau tidak diberikan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '403':
+          description: Tidak dapat menghapus akun sendiri atau akses ditolak.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+        '404':
+          description: Petugas tidak ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ResponseError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Token Invalid: Unauthorized"
+    LoginSiswa:
+      type: object
+      required:
+        - nisn
+        - nama
+      properties:
+        nisn:
+          type: number
+          example: 1234
+        nama:
+          type: string
+          example: "John Doe"
+    LoginPetugas:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: "petugas123"
+        password:
+          type: string
+          example: "password123"
+    RegisterSiswa:
+      type: object
+      required:
+        - nisn
+        - nis
+        - nama
+        - id_kelas
+        - alamat
+        - no_telp
+        - id_spp
+      properties:
+        nisn:
+          type: number
+          example: 12345
+        nis:
+          type: number
+          example: 67890
+        nama:
+          type: string
+          example: "Jane Doe"
+        id_kelas:
+          type: number
+          example: 1
+        alamat:
+          type: string
+          example: "Jalan Contoh No. 1"
+        no_telp:
+          type: number
+          example: 628123456789
+        id_spp:
+          type: number
+          example: 1
+    SiswaDetail:
+      type: object
+      properties:
+        nisn:
+          type: string
+        nis:
+          type: string
+        nama:
+          type: string
+        id_kelas:
+          type: number
+        alamat:
+          type: string
+        no_telp:
+          type: string
+        id_spp:
+          type: number
+        nama_kelas:
+          type: string
+        kompetensi_keahlian:
+          type: string
+    PembayaranHistory:
+      type: object
+      properties:
+        nisn:
+          type: string
+          example: "1234"
+        nama:
+          type: string
+          example: "Test"
+        telepon:
+          type: string
+          example: "812345678"
+        histori_bayar:
+          type: array
+          items:
+            type: object
+            properties:
+              status_bayar:
+                type: string
+                example: "Lunas"
+              kurang:
+                type: number
+                example: 0
+              tahun_spp:
+                type: number
+                example: 2025
+              nominal_spp:
+                type: number
+                example: 500000
+              pembayaran:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tanggal_bayar:
+                      type: string
+                      format: date-time
+                      example: "2025-08-17T17:00:00.000Z"
+                    jumlah_bayar:
+                      type: number
+                      example: 200000
+                    petugas:
+                      type: string
+                      example: "Petugas A"
+    UpdateSiswa:
+      type: object
+      required:
+        - nisn
+      properties:
+        nisn:
+          type: number
+          example: 12345
+        nis:
+          type: number
+          example: 67891
+        nama:
+          type: string
+          example: "Jane Smith"
+        id_kelas:
+          type: number
+          example: 2
+        alamat:
+          type: string
+          example: "Jalan Contoh Baru"
+        no_telp:
+          type: number
+          example: 628123456790
+        id_spp:
+          type: number
+          example: 2
+    DeleteSiswa:
+      type: object
+      required:
+        - nisn
+      properties:
+        nisn:
+          type: number
+          example: 12345
+    RegisterPetugas:
+      type: object
+      required:
+        - username
+        - password
+        - nama
+        - level
+      properties:
+        username:
+          type: string
+          example: "petugas_baru"
+        password:
+          type: string
+          example: "pass123"
+        nama:
+          type: string
+          example: "Petugas Baru"
+        level:
+          type: string
+          enum: ["petugas", "admin"]
+          example: "petugas"
+    Petugas:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "petugas_baru"
+        nama_petugas:
+          type: string
+          example: "Petugas Baru"
+        level:
+          type: string
+          enum: ["petugas", "admin"]
+          example: "petugas"
+    UpdatePetugas:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          example: "petugas_baru"
+        password:
+          type: string
+          example: "passbaru123"
+        nama_petugas:
+          type: string
+          example: "Petugas Terbaru"
+        level:
+          type: string
+          enum: ["petugas", "admin"]
+          example: "admin"
+    DeletePetugas:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+          example: "petugas_lama"

@@ -3,6 +3,7 @@
 const authorize = (allowedLevels) => {
   return (req, res, next) => {
     // Pastikan authMiddleware sudah berjalan sebelumnya
+    
     const userLevel = req.user ? req.user.level : null;
     // console.log(allowedLevels);
     // console.log(userLevel);

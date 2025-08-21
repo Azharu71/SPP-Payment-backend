@@ -33,25 +33,49 @@ route.patch(
   petugas.update
 );
 
-route.delete("/api/admin/petugas/delete",authMiddleware,
-  authorize(["admin"]),petugas.deletePetugas );
+route.delete(
+  "/api/admin/petugas/delete",
+  authMiddleware,
+  authorize(["admin"]),
+  petugas.deletePetugas
+);
 
+//dashboard admin
 route.get("/api/admin", authMiddleware, authorize(["admin"]), (req, res) => {
   res.status(200).json({
     data: req.body,
   });
 });
 
-//router lainnya disini
-
-//route petugas
+//dashboard petugas
 route.get(
   "/api/petugas",
   authMiddleware,
   authorize(["petugas", "admin"]),
   (req, res) => {
-    res.send("Halo oetugas");
+    res.send("Halo petugas");
   }
+);
+
+//router petugas dan admin
+route.delete(
+  "/api/petugas/logout",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.logout
+);
+
+route.patch(
+  "/api/petugas/siswa/update",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.updateSiswa
+);
+route.delete(
+  "/api/petugas/siswa/delete",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.deleteSiswa
 );
 //router lainnya disini
 
