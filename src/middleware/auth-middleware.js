@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
   //not bearer token
-  const token = req.headers["authorization"];
+  let token = req.headers["authorization"];
 
   if (!token) {
     return res
@@ -12,9 +12,11 @@ const authMiddleware = async (req, res, next) => {
       })
       .end();
   }
-  if (token.startsWith("Bearer ")) {
+  if (token.startsWith("Bearer")) {
     //bearer token
     token = token.substring(7, token.length);
+    console.log(token);
+    
   }
   try {
     const user = jwt.verify(token, process.env.SECRET);
