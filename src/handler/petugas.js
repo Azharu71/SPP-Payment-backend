@@ -106,6 +106,66 @@ const deleteSiswa = async (req, res, next) => {
   }
 };
 
+const getSiswa = async (req, res, next) => {
+  try {
+    const result = await petugasService.getSiswa();
+    // console.log(result);
+
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+//kelas
+const tambahKelas = async (req, res, next) => {
+  try {
+    const result = await petugasService.tambahKelas(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getKelas = async (req, res, next) => {
+  try {
+    const result = await petugasService.getKelas();
+    // console.log(result);
+
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const updateKelas = async (req, res, next) => {
+  try {
+    const result = await petugasService.updateKelas(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deleteKelas = async (req, res, next) => {
+  try {
+    const result = await petugasService.deleteKelas(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   login,
   register,
@@ -115,4 +175,9 @@ module.exports = {
   logout,
   updateSiswa,
   deleteSiswa,
+  getSiswa,
+  getKelas,
+  updateKelas,
+  deleteKelas,
+  tambahKelas,
 };

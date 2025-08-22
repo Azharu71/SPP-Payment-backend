@@ -14,18 +14,14 @@ const petugasRegister = Joi.object({
   level: Joi.string().required(),
 });
 
-const petugasUpdate = Joi.object({
+const petugas = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().optional(),
   nama_petugas: Joi.string().optional(),
   level: Joi.string().optional(),
 });
 
-const petugasDelete = Joi.object({
-  username: Joi.string().required(),
-});
-
-const updateSiswa = Joi.object({
+const siswa = Joi.object({
   nisn: Joi.number().required(),
   nis: Joi.number().optional(),
   nama: Joi.string().max(100).optional(),
@@ -34,14 +30,21 @@ const updateSiswa = Joi.object({
   no_telp: Joi.number().optional(),
   id_spp: Joi.number().optional(),
 });
-const deleteSiswa = Joi.object({
-  nisn: Joi.number().required(),
+const tambahKelas = Joi.object({
+  nama_kelas: Joi.string().required(),
+  kompetensi_keahlian: Joi.string().required(),
+});
+
+const kelas = Joi.object({
+  id_kelas: Joi.number().required(),
+  nama_kelas: Joi.string().optional(),
+  kompetensi_keahlian: Joi.string().optional(),
 });
 module.exports = {
   petugasValidation,
   petugasRegister,
-  petugasUpdate,
-  petugasDelete,
-  updateSiswa,
-  deleteSiswa
+  petugas,
+  siswa,
+  kelas,
+  tambahKelas,
 };

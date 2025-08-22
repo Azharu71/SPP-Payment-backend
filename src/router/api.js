@@ -77,6 +77,38 @@ route.delete(
   authorize(["admin", "petugas"]),
   petugas.deleteSiswa
 );
+route.get(
+  "/api/petugas/siswa",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.getSiswa
+);
+
+route.post(
+  "/api/petugas/kelas/tambah",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.tambahKelas
+);
+route.get(
+  "/api/petugas/kelas",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.getKelas
+);
+route.patch(
+  "/api/petugas/kelas/update",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.updateKelas
+);
+route.delete(
+  "/api/petugas/kelas/delete",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.deleteKelas
+);
+
 //router lainnya disini
 
 module.exports = { route };
