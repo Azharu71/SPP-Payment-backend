@@ -6,9 +6,10 @@
 ### Penambahan fitur dari versi asli:
 - Authorization token JWT
 - Enskripsi Data menggunakan BcryptJS
+- Validasi Data dengan JOI
 
-```
-Catatan: Dokumentasi API masih merupakan hasil generated AI Gemini,
-         Komentar pada kode masih belum dirapikan,
-         Mungkin masih terdapat beberapa error yang belum dicek
-```
+**Catatan :** 
+* Dokumentasi API masih merupakan hasil generated AI (Gemini) kemungkinan besar banyak yang tidak sesuai      
+* Komentar pada kode masih belum dirapikan
+* Kemungkinan besar masih terdapat beberapa error yang belum dicek
+
