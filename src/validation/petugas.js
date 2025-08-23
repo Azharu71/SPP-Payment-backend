@@ -40,6 +40,34 @@ const kelas = Joi.object({
   nama_kelas: Joi.string().optional(),
   kompetensi_keahlian: Joi.string().optional(),
 });
+const spp = Joi.object({
+  id_spp: Joi.number().required(),
+  tahun: Joi.number().optional(),
+  nominal: Joi.number().optional(),
+});
+const tambahSpp = Joi.object({
+  tahun: Joi.number().required(),
+  nominal: Joi.number().required(),
+});
+
+const tambahPembayaran = Joi.object({
+  id_petugas: Joi.number().required(),
+  id_spp: Joi.number().required(),
+  nisn: Joi.number().required(),
+  tgl_bayar: Joi.date().required(),
+  jumlah_bayar: Joi.number().required(),
+});
+
+const pembayaran = Joi.object({
+  id_pembayaran: Joi.number().required(),
+  id_petugas: Joi.number().optional(),
+  id_spp: Joi.number().optional(),
+  nisn: Joi.number().optional(),
+  tgl_bayar: Joi.date().optional(),
+  jumlah_bayar: Joi.number().optional(),
+});
+
+
 module.exports = {
   petugasValidation,
   petugasRegister,
@@ -47,4 +75,8 @@ module.exports = {
   siswa,
   kelas,
   tambahKelas,
+  spp,
+  tambahSpp,
+  tambahPembayaran,
+  pembayaran,
 };

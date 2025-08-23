@@ -14,7 +14,7 @@ const login = async (req, res, next) => {
         message: "Login Success",
         data: result,
       });
-      console.log(req.body);
+      // console.log(req.body);
     } else if (req.body.username) {
       const result = await petugasService.petugasLogin(req.body);
       res.status(200).json({
@@ -166,6 +166,85 @@ const deleteKelas = async (req, res, next) => {
   }
 };
 
+//logic for spp
+const tambahSpp = async (req, res, next) => {
+  try {
+    const result = await petugasService.tambahSpp(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getSpp = async (req, res, next) => {
+  try {
+    const result = await petugasService.getSpp();
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const updateSpp = async (req, res, next) => {
+  try {
+    const result = await petugasService.updateSpp(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deleteSpp = async (req, res, next) => {
+  try {
+    const result = await petugasService.deleteSpp(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// logic for pembayaran
+const tambahPembayaran = async (req, res, next) => {
+  try {
+    const result = await petugasService.tambahPembayaran(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deletePembayaran = async (req, res, next) => {
+  try {
+    const result = await petugasService.deletePembayaran(req.body);
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getPembayaran = async (req, res, next) => {
+  try {
+    const result = await petugasService.getPembayaran();
+    res.status(200).json({
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   login,
   register,
@@ -180,4 +259,11 @@ module.exports = {
   updateKelas,
   deleteKelas,
   tambahKelas,
+  tambahSpp,
+  getSpp,
+  updateSpp,
+  deleteSpp,
+  tambahPembayaran,
+  deletePembayaran,
+  getPembayaran,
 };

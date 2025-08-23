@@ -1,0 +1,52 @@
+{
+  "petugasValidation": {
+    "username": "some_username",
+    "password": "some_password"
+  },
+  "petugasRegister": {
+    "username": "some_username",
+    "password": "some_password",
+    "nama": "some_name",
+    "level": "admin"
+  },
+  "petugas": {
+    "username": "some_username",
+    "password": "some_password",
+    "nama_petugas": "some_name",
+    "level": "petugas"
+  },
+  "siswa": {
+    "nisn": 1234567890,
+    "nis": 12345678,
+    "nama": "some_name",
+    "id_kelas": 1,
+    "alamat": "some_address",
+    "no_telp": "081234567890",
+    "id_spp": 1
+  },
+  "tambahKelas": {
+    "nama_kelas": "some_class_name",
+    "kompetensi_keahlian": "some_competency"
+  },
+  "kelas": {
+    "id_kelas": 1,
+    "nama_kelas": "some_class_name",
+    "kompetensi_keahlian": "some_competency"
+  },
+  "spp": {
+    "id_spp": 1,
+    "tahun": 2023,
+    "nominal": 100000
+  },
+  "tambahSpp": {
+    "tahun": 2023,
+    "nominal": 100000
+  },
+  "tambahPembayaran": {
+    "id_petugas": 1,
+    "id_spp": 1,
+    "nisn": 123,
+    "tgl_bayar": "2023-10-27",
+    "jumlah_bayar": 100000
+  }
+}

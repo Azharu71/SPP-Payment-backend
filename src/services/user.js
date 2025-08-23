@@ -1,6 +1,10 @@
 const db = require("../app/db");
 const { ResponseError } = require("../handler/error-handler");
-const { userValidation, loginValidation } = require("../validation/user");
+const {
+  userValidation,
+  loginValidation,
+  getPembayaran,
+} = require("../validation/user");
 const jwt = require("jsonwebtoken");
 const userRegister = async (req) => {
   const { error, value: user } = userValidation.validate(req);
@@ -70,6 +74,8 @@ const userLogin = async (req) => {
     nama: userPayload.nama,
     level: "siswa",
   };
+  console.log(payload);
+  
   const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1h" });
 
   return {
@@ -95,13 +101,18 @@ const userGet = async (nisn) => {
   return userRows[0];
 };
 
-const userPembayaran = async (nisn) => {
+const userPembayaran = async (req) => {
   //joi validation
-
+  const isValid= loginValidation.validate(req);
+  if (!isValid) {
+    throw new ResponseError(400, error.message);
+  }
+  // console.log(req);
+  
   //query sql
   const selectUser = `SELECT s.nisn, s.nama, s.no_telp, p.tgl_bayar, p.jumlah_bayar, spp.nominal, spp.tahun, pt.nama_petugas FROM pembayaran p INNER JOIN siswa s ON p.nisn = s.nisn INNER JOIN spp ON p.id_spp = spp.id_spp INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas WHERE s.nisn = ? ORDER BY p.tgl_bayar ASC `;
 
-  const [userRows] = await db.query(selectUser, [nisn]);
+  const [userRows] = await db.query(selectUser, req);
   // console.log(userRows);
 
   // Hentikan eksekusi jika nisn atau nis salah

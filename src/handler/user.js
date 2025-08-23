@@ -27,6 +27,7 @@ const getUser = async (req, res, next) => {
 const getPembayaran = async (req, res, next) => {
   try {
     const result = await userService.userPembayaran(req.user.nisn);
+    // console.log(req.user.nisn);
     res.status(200).json({
       message: "User data retrieved",
       data: result,

@@ -417,6 +417,181 @@ const deleteKelas = async (req) => {
   return { message: "Kelas Deleted" };
 };
 
+//logic for spp
+const tambahSpp = async (req) => {
+  // joi validation
+  const { error, value: spp } = petugasValidation.tambahSpp.validate(req);
+  if (error) {
+    throw new ResponseError(400, error.message);
+  }
+
+  const insertSpp = "INSERT INTO spp (tahun, nominal) VALUES (?,?)";
+  const values = [spp.tahun, spp.nominal];
+
+  try {
+    db.query(insertSpp, values);
+    return {
+      tahun: spp.tahun,
+      nominal: spp.nominal,
+    };
+  } catch (error) {
+    throw e;
+  }
+};
+
+const getSpp = async () => {
+  const selectSpp = "SELECT * FROM spp";
+  const [sppRows] = await db.query(selectSpp);
+
+  if (sppRows.length == 0) {
+    throw new ResponseError(404, "SPP data is not found");
+  }
+
+  return { spp: sppRows };
+};
+
+const updateSpp = async (req) => {
+  const { error, value: spp } = petugasValidation.spp.validate(req);
+  if (error) {
+    throw new ResponseError(400, error.message);
+  }
+
+  const selectSpp = "SELECT id_spp FROM spp WHERE id_spp = ?";
+  const [sppRows] = await db.query(selectSpp, spp.id_spp);
+
+  if (sppRows.length === 0) {
+    throw new ResponseError(400, "There is no SPP with that ID");
+  }
+
+  const newData = {};
+  if (spp.tahun) {
+    newData.tahun = spp.tahun;
+  }
+  if (spp.nominal) {
+    newData.nominal = spp.nominal;
+  }
+
+  if (Object.keys(newData).length === 0) {
+    return { message: "No new data provided to update." };
+  }
+
+  const setClauses = Object.keys(newData)
+    .map((key) => `${key} = ?`)
+    .join(", ");
+  const values = [...Object.values(newData), spp.id_spp];
+
+  const updateSpp = `UPDATE spp SET ${setClauses} WHERE id_spp = ?`;
+
+  try {
+    const [query] = await db.query(updateSpp, values);
+    if (query.changedRows === 0) {
+      throw new ResponseError(404, "No provided data to update");
+    } else {
+      return {
+        message: "Updated successfully",
+        updated: Object.keys(newData),
+      };
+    }
+  } catch (e) {
+    throw e;
+  }
+};
+
+const deleteSpp = async (req) => {
+  const { error, value: spp } = petugasValidation.spp.validate(req);
+  if (error) {
+    throw new ResponseError(400, error.message);
+  }
+
+  const getSpp = `SELECT * FROM spp WHERE id_spp = ?`;
+  const [isSpp] = await db.query(getSpp, spp.id_spp);
+
+  if (isSpp.length === 0) {
+    throw new ResponseError(404, `There is no SPP with id: ${spp.id_spp}`);
+  }
+
+  const deleteSpp = "DELETE FROM spp WHERE id_spp = ?";
+  try {
+    await db.query(deleteSpp, spp.id_spp);
+  } catch (e) {
+    throw e;
+  }
+
+  return { message: "SPP Deleted" };
+};
+
+
+//logic for pembayaran
+const tambahPembayaran = async (req) => {
+  const { error, value: pembayaran } = petugasValidation.tambahPembayaran.validate(req);
+  if (error) {
+    throw new ResponseError(400, error.message);
+  }
+  const insertPembayaran =
+    "INSERT INTO pembayaran (id_petugas, id_spp, nisn, tgl_bayar, jumlah_bayar) VALUES (?,?,?,?,?)";
+  const values = [
+    pembayaran.id_petugas,
+    pembayaran.id_spp,
+    pembayaran.nisn,
+    pembayaran.tgl_bayar,
+    pembayaran.jumlah_bayar,
+  ];
+
+  try {
+    await db.query(insertPembayaran, values);
+    return {
+      message: "Pembayaran added successfully",
+      data: pembayaran,
+    };
+  } catch (e) {
+    throw e;
+  }
+};
+
+const deletePembayaran = async (req) => {
+  const { error, value: pembayaran } = petugasValidation.pembayaran.validate(req);
+  if (error) {
+    throw new ResponseError(400, error.message);
+  }
+
+  const getPembayaran = `SELECT * FROM pembayaran WHERE id_pembayaran = ?`;
+  const [isPembayaran] = await db.query(getPembayaran, pembayaran.id_pembayaran);
+
+  if (isPembayaran.length === 0) {
+    throw new ResponseError(
+      404,
+      `There is no Pembayaran with id: ${pembayaran.id_pembayaran}`
+    );
+  }
+
+  const deletePembayaran = "DELETE FROM pembayaran WHERE id_pembayaran = ?";
+  try {
+    await db.query(deletePembayaran, pembayaran.id_pembayaran);
+  } catch (e) {
+    throw e;
+  }
+
+  return { message: "Pembayaran Deleted" };
+};
+
+const getPembayaran = async () => {
+  const selectPembayaran = `
+    SELECT s.nisn, s.nama, s.no_telp, p.tgl_bayar, p.jumlah_bayar, spp.nominal, spp.tahun, pt.nama_petugas FROM pembayaran p INNER JOIN siswa s ON p.nisn = s.nisn INNER JOIN spp ON p.id_spp = spp.id_spp INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas`;
+
+  const [pembayaranRows] = await db.query(selectPembayaran);
+
+  if (pembayaranRows.length === 0) {
+    throw new ResponseError(404, "Pembayaran not found");
+  }
+
+  return {
+    message: "Pembayaran data retrieved successfully",
+    data: pembayaranRows,
+  };
+};
+
+
+
 module.exports = {
   petugasLogin,
   getPetugas,
@@ -431,4 +606,11 @@ module.exports = {
   updateKelas,
   deleteKelas,
   tambahKelas,
+  tambahSpp,
+  getSpp,
+  updateSpp,
+  deleteSpp,
+  tambahPembayaran,
+  deletePembayaran,
+  getPembayaran
 };

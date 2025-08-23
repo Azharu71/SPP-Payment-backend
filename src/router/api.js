@@ -109,6 +109,52 @@ route.delete(
   petugas.deleteKelas
 );
 
+//logic for spp
+route.post(
+  "/api/petugas/spp/tambah",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.tambahSpp
+);
+route.get(
+  "/api/petugas/spp",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.getSpp
+);
+route.patch(
+  "/api/petugas/spp/update",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.updateSpp
+);
+route.delete(
+  "/api/petugas/spp/delete",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.deleteSpp
+);
+
+//logic for pembayaran
+route.post(
+  "/api/petugas/pembayaran/tambah",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.tambahPembayaran
+);
+
+route.delete(
+  "/api/petugas/pembayaran/delete",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.deletePembayaran
+);
+route.get(
+  "/api/petugas/pembayaran",
+  authMiddleware,
+  authorize(["admin", "petugas"]),
+  petugas.getPembayaran
+);
 //router lainnya disini
 
 module.exports = { route };

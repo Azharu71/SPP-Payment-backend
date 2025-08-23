@@ -16,4 +16,5 @@ const loginValidation = Joi.object({
   nama: Joi.string().max(100).required(),
 });
 
-module.exports = { userValidation, loginValidation };
+
+module.exports = { userValidation, loginValidation};
