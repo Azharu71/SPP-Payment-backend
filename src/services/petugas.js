@@ -89,7 +89,7 @@ const getPetugas = async (user) => {
     throw new ResponseError(404, "Petugas is not found");
   }
   const data = {
-    message: `You're login AS: ${user.username}`,
+    message: `Halo ${user.username}`,
     daftar_petugas: petugasRows,
   };
 
@@ -520,10 +520,10 @@ const deleteSpp = async (req) => {
   return { message: "SPP Deleted" };
 };
 
-
 //logic for pembayaran
 const tambahPembayaran = async (req) => {
-  const { error, value: pembayaran } = petugasValidation.tambahPembayaran.validate(req);
+  const { error, value: pembayaran } =
+    petugasValidation.tambahPembayaran.validate(req);
   if (error) {
     throw new ResponseError(400, error.message);
   }
@@ -549,13 +549,17 @@ const tambahPembayaran = async (req) => {
 };
 
 const deletePembayaran = async (req) => {
-  const { error, value: pembayaran } = petugasValidation.pembayaran.validate(req);
+  const { error, value: pembayaran } =
+    petugasValidation.pembayaran.validate(req);
   if (error) {
     throw new ResponseError(400, error.message);
   }
 
   const getPembayaran = `SELECT * FROM pembayaran WHERE id_pembayaran = ?`;
-  const [isPembayaran] = await db.query(getPembayaran, pembayaran.id_pembayaran);
+  const [isPembayaran] = await db.query(
+    getPembayaran,
+    pembayaran.id_pembayaran
+  );
 
   if (isPembayaran.length === 0) {
     throw new ResponseError(
@@ -590,8 +594,6 @@ const getPembayaran = async () => {
   };
 };
 
-
-
 module.exports = {
   petugasLogin,
   getPetugas,
@@ -612,5 +614,5 @@ module.exports = {
   deleteSpp,
   tambahPembayaran,
   deletePembayaran,
-  getPembayaran
+  getPembayaran,
 };

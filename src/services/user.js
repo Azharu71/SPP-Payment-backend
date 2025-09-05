@@ -74,7 +74,7 @@ const userLogin = async (req) => {
     nama: userPayload.nama,
     level: "siswa",
   };
-  console.log(payload);
+  // console.log(payload);
   
   const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1h" });
 

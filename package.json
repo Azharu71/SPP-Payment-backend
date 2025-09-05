@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "test": "node ./src/test/test.js",
-    "run": "nodemon ./src/main.js"
+    "start": "nodemon ./src/main.js"
   },
   "author": "Haru",
   "license": "ISC",

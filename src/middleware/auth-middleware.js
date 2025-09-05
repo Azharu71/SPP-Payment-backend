@@ -15,8 +15,7 @@ const authMiddleware = async (req, res, next) => {
   if (token.startsWith("Bearer")) {
     //bearer token
     token = token.substring(7, token.length);
-    console.log(token);
-    
+    // console.log(token);
   }
   try {
     const user = jwt.verify(token, process.env.SECRET);
