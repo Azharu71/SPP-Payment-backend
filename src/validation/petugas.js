@@ -6,14 +6,12 @@ const petugasValidation = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
 });
-
 const petugasRegister = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
-  nama: Joi.string().required(),
+  nama: Joi.string().required(),  
   level: Joi.string().required(),
 });
-
 const petugas = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().optional(),
@@ -34,7 +32,6 @@ const tambahKelas = Joi.object({
   nama_kelas: Joi.string().required(),
   kompetensi_keahlian: Joi.string().required(),
 });
-
 const kelas = Joi.object({
   id_kelas: Joi.number().required(),
   nama_kelas: Joi.string().optional(),
@@ -49,7 +46,6 @@ const tambahSpp = Joi.object({
   tahun: Joi.number().required(),
   nominal: Joi.number().required(),
 });
-
 const tambahPembayaran = Joi.object({
   id_petugas: Joi.number().required(),
   id_spp: Joi.number().required(),
@@ -57,7 +53,6 @@ const tambahPembayaran = Joi.object({
   tgl_bayar: Joi.date().required(),
   jumlah_bayar: Joi.number().required(),
 });
-
 const pembayaran = Joi.object({
   id_pembayaran: Joi.number().required(),
   id_petugas: Joi.number().optional(),
